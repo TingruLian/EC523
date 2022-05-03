@@ -111,7 +111,7 @@ def single_img_train(img_path:str, cache_path:str, res_path:str, model, h:int, w
     save_path = os.path.join(res_path, img_name)
     if not os.path.exists(save_path):
         os.makedirs(save_path)
-    save_file_path = os.path.join(save_path, img_name + "_result.txt")
+    save_file_path = os.path.join(save_path, img_name + ".txt")
     print("Result is saved at: " + save_file_path)
     np.savetxt(save_file_path, final_results.numpy())
 
