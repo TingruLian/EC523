@@ -3,6 +3,7 @@ import os
 import cv2
 import torch
 import numpy as np
+import cv2
 
 def image_slice(img_path, cache_path, h, w):
     # img_path: Path of the image
@@ -84,7 +85,12 @@ def single_img_train(img_path:str, cache_path:str, res_path:str, model, h:int, w
             else:
                 slice_results = torch.cat((slice_results, results), 0)
     
+    if type(slice_results) == int:
+        print("Empty result is not saved.")
+        return
+
     # Postprocess
+    # Remove duplicate detections
     skip_list = []
     for index, slice_result in enumerate(slice_results):
         for res in single_image_results.xyxy[0]:
@@ -100,15 +106,21 @@ def single_img_train(img_path:str, cache_path:str, res_path:str, model, h:int, w
                 and slice_result[5] == res[5]
             ):
                skip_list.append(index)
-    
+
+    ifExecuted = False
+
     for index, slice_result in enumerate(slice_results):
         if(index not in skip_list):
+            ifExecuted = True
             slice_result = torch.tensor(slice_result)
             slice_result = torch.reshape(slice_result, [1, 6])
             final_results = torch.cat((single_image_results.xyxy[0], slice_result), 0)
 
+    if(not ifExecuted):
+        final_results = single_image_results.xyxy[0]
+
     # Save results
-    save_path = os.path.join(res_path, img_name)
+    save_path = os.path.join(res_path, "result")
     if not os.path.exists(save_path):
         os.makedirs(save_path)
     save_file_path = os.path.join(save_path, img_name + ".txt")
@@ -117,3 +129,20 @@ def single_img_train(img_path:str, cache_path:str, res_path:str, model, h:int, w
 
 
     return final_results
+
+def draw_anchors(results,img_path, save_path):
+#     create save path if not existed
+    if not os.path.exists(save_path):
+        os.mkdirs(save_path)
+# read img
+    img = cv2.imread(img_path)
+    for res in results:
+        xmin = int(res[0].item())
+        ymin = int(res[1].item())
+        xmax = int(res[2].item())
+        ymax = int(res[3].item())
+        cv2.rectangle(img, (xmin, ymin),(xmax, ymax), (0, 255, 0), 5)
+# save image        
+    cv2.imwrite(save_path, img)
+    return
+
