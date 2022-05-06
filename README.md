@@ -21,3 +21,12 @@ Slicing Aid Fine-tuning slices the images into overlapped patches. Object detect
 Figure 2.  Slicing aided fine-tuning (top) and slicing aided hyper inference (bottom) methods.
 
 [1]https://arxiv.org/pdf/2202.06934v2.pdf
+
+## Installation
+This project's code is completely using Python. Therefore it can be run on any python code editor such as Google Colab, Jupyter Notebook, etc. 
+There are the steps to replicate the result:
+1. Download yolov5.py for testing performance of yolov5 and save annotatinos. 
+2. Download sahi.py for SAHI model
+3. sahi_yolo_test.ipynb for testing SAHI and save annotatinos. 
+4. Open review_object_detection_metrics-main for calculating MAP
+5. calculate MAP for both YOLOv5 and YOLOv5 with SAHI
